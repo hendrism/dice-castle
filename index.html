@@ -6,12 +6,24 @@
   <title>Dice & Castle</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 <body>
   <h1>🛡️ Dice & Castle</h1>
   <div id="narration">Welcome, adventurer!</div>
   <button id="exploreBtn">Roll to Explore</button>
-  <div id="resources">Wood: 0 | Stone: 0 | Metal: 0</div>
+  <div id="resources">Wood: 0 | Stone: 0 | Metal: 0 | Level: 1</div>
+
+  <div id="buildControls">
+    <label for="buildSelect">Build:</label>
+    <select id="buildSelect">
+      <option value="wall">Wall 🧱</option>
+      <option value="tower">Tower 🏰</option>
+      <option value="door">Door 🚪</option>
+    </select>
+    <button id="undoBtn">Undo</button>
+    <button id="clearBtn">Clear</button>
+  </div>
 
   <h2>Your Castle</h2>
   <div id="grid"></div>

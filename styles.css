@@ -4,9 +4,12 @@ body {
   margin: auto;
   padding: 1em;
 }
+#buildControls {
+  margin: 0.5em 0;
+}
 #grid {
   display: grid;
-  grid-template: repeat(5, 50px) / repeat(5, 50px);
+  grid-template: repeat(var(--grid-size, 5), 50px) / repeat(var(--grid-size, 5), 50px);
   gap: 2px;
   margin-top: 0.5em;
 }
@@ -16,6 +19,9 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 0.8em;
+}
+.cell.selected {
+  outline: 2px solid #f00;
 }
 button {
   font-size: 1em;

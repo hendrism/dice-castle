@@ -9,10 +9,11 @@ This project is designed to be iPhone-friendly and playable in portrait mode. On
 
 ## 🎮 Gameplay
 
-- Tap **"Roll to Explore"** to gather random resources (wood, stone, metal).
-- Click on empty squares in the grid to place a **wall (🧱)** using 1 stone.
-- Your resources are tracked and displayed.
-- Future features might include more build types, regions, quests, and vertical building.
+- Tap **"Roll to Explore"** to gather random resources with a chance for random events.
+- Build structures on the grid: **walls (🧱)**, **towers (🏰)** and **doors (🚪)**.
+- Resources and grid layout persist between sessions thanks to `localStorage`.
+- Gain experience when exploring and level up over time.
+- Undo your last placement or clear the grid entirely.
 
 ---
 
@@ -46,9 +47,7 @@ This project is designed to be iPhone-friendly and playable in portrait mode. On
 
 - Multi-floor castle building
 - Crafting system (combine resources)
-- Random events during exploration
 - Quest-based objectives
-- Save/load via localStorage
 
 ---
 
