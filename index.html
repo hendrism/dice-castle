@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dice & Castle</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest.json" />
+</head>
+<body>
+  <h1>🛡️ Dice & Castle</h1>
+  <div id="narration">Welcome, adventurer!</div>
+  <button id="exploreBtn">Roll to Explore</button>
+  <div id="resources">Wood: 0 | Stone: 0 | Metal: 0</div>
+
+  <h2>Your Castle</h2>
+  <div id="grid"></div>
+
+  <script src="app.js"></script>
+  <script>
+    // register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+</body>
+</html>
