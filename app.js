@@ -1,5 +1,5 @@
 // constants
-const GRID_SIZE = 5;
+const GRID_SIZE = 8;
 const RESOURCE_TYPES = { WOOD: 'wood', STONE: 'stone', METAL: 'metal' };
 
 const CRAFTABLES = {
@@ -134,11 +134,29 @@ document.getElementById('exploreBtn').addEventListener('click', () => {
 // grid setup
 const gridEl = document.getElementById('grid');
 const buildSelect = document.getElementById('buildSelect');
+const buildCostEl = document.getElementById('buildCost');
 const craftSelect = document.getElementById('craftSelect');
 const floorSelect = document.getElementById('floorSelect');
 const addFloorBtn = document.getElementById('addFloorBtn');
 let selectedBuild = buildSelect.value;
-buildSelect.addEventListener('change', e => (selectedBuild = e.target.value));
+buildSelect.addEventListener('change', e => {
+  selectedBuild = e.target.value;
+  updateBuildCost();
+});
+
+function updateBuildCost() {
+  const building = BUILDINGS[selectedBuild];
+  if (building.cost) {
+    const costStr = Object.entries(building.cost)
+      .map(([r, n]) => `${n} ${r}`)
+      .join(', ');
+    buildCostEl.textContent = `Cost: ${costStr}`;
+  } else if (building.inventoryItem) {
+    buildCostEl.textContent = `Uses: 1 ${building.inventoryItem}`;
+  } else {
+    buildCostEl.textContent = '';
+  }
+}
 
 function populateFloors() {
   floorSelect.innerHTML = '';
@@ -252,3 +270,4 @@ document.getElementById('clearBtn').addEventListener('click', () => {
 populateFloors();
 drawGrid();
 updateResources();
+updateBuildCost();
