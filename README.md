@@ -9,7 +9,9 @@ This project is designed to be iPhone-friendly and playable in portrait mode. On
 
 ## 🎮 Gameplay
 
-- Tap **"Roll to Explore"** to gather random resources with a chance for random events.
+- Choose a location and tap **"Explore"** to gather resources using stamina.
+- Stamina drains as you explore and automatically recovers when you sleep.
+- Sleep triggers a dice roll for good, bad, or neutral overnight events.
 - Build structures on the grid: **walls (🧱)**, **towers (🏰)** and **doors (🚪)**.
 - Resources and grid layout persist between sessions thanks to `localStorage`.
 - Gain experience when exploring and level up over time.

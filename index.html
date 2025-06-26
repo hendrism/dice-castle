@@ -11,8 +11,14 @@
 <body>
   <h1>🛡️ Dice & Castle</h1>
   <div id="narration">Welcome, adventurer!</div>
-  <button id="exploreBtn">Roll to Explore</button>
-  <div id="resources">Wood: 0 | Stone: 0 | Metal: 0 | Level: 1</div>
+  <label for="locationSelect">Location:</label>
+  <select id="locationSelect">
+    <option value="forest">Forest</option>
+    <option value="quarry">Quarry</option>
+    <option value="mine">Mine</option>
+  </select>
+  <button id="exploreBtn">Explore</button>
+  <div id="resources">Wood: 0 | Stone: 0 | Metal: 0 | Level: 1 | Stamina: 10/10</div>
 
   <div id="questContainer">
     <pre id="quests"></pre>
