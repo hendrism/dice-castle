@@ -24,37 +24,27 @@
     <pre id="quests"></pre>
   </div>
 
-  <div id="buildControls">
-    <label for="buildSelect">Build:</label>
-    <select id="buildSelect">
-      <option value="home">Home 🏠</option>
-      <option value="woodWall">Wood Wall 🪵</option>
-      <option value="stoneWall">Stone Wall 🧱</option>
-      <option value="farm">Farm 🌾</option>
-      <option value="quarry">Quarry ⛏️</option>
-    </select>
-    <div id="buildCost"></div>
-    <button id="undoBtn">Undo</button>
-    <button id="clearBtn">Clear</button>
+  <h2>Your Settlement</h2>
+  <div id="structures">
+    <div id="homeSection">
+      Home Level: <span id="homeLevel"></span>
+      <button id="upgradeHomeBtn"></button>
+    </div>
+    <div id="wallsSection">
+      Walls Level: <span id="wallsLevel"></span>
+      <button id="upgradeWallsBtn"></button>
+    </div>
+    <div id="farmSection">
+      Farms: <span id="farmCount"></span> (Level <span id="farmLevel"></span>)
+      <button id="buildFarmBtn"></button>
+      <button id="upgradeFarmBtn"></button>
+    </div>
+    <div id="quarrySection">
+      Quarries: <span id="quarryCount"></span> (Level <span id="quarryLevel"></span>)
+      <button id="buildQuarryBtn"></button>
+      <button id="upgradeQuarryBtn"></button>
+    </div>
   </div>
-
-  <div id="craftControls">
-    <label for="craftSelect">Craft:</label>
-    <select id="craftSelect">
-      <option value="fortifiedWall">Fortified Wall</option>
-      <option value="reinforcedDoor">Reinforced Door</option>
-    </select>
-    <button id="craftBtn">Craft</button>
-  </div>
-
-  <div id="floorControls">
-    <label for="floorSelect">Floor:</label>
-    <select id="floorSelect"></select>
-    <button id="addFloorBtn">Add Floor</button>
-  </div>
-
-  <h2>Your Castle</h2>
-  <div id="grid"></div>
 
   <script src="app.js"></script>
   <script>
