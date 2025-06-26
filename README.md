@@ -1,7 +1,7 @@
 # dice-castle
 # 🛡️ Dice & Castle
 
-**Dice & Castle** is a minimalist browser-based game built as a Progressive Web App (PWA). You explore regions using dice rolls to gather resources, then use those resources to build a castle on a simple 2D grid.
+**Dice & Castle** is a minimalist browser-based game built as a Progressive Web App (PWA). You explore regions using dice rolls to gather resources, then use those resources to upgrade your camp into a thriving settlement.
 
 This project is designed to be iPhone-friendly and playable in portrait mode. Once deployed, you can "Add to Home Screen" on Safari to play like a native app.
 
@@ -12,12 +12,11 @@ This project is designed to be iPhone-friendly and playable in portrait mode. On
 - Choose a location and tap **"Explore"** to gather resources using stamina.
 - Stamina drains as you explore and automatically recovers when you sleep.
 - Sleep triggers a dice roll for good, bad, or neutral overnight events.
-- Build on a terrain grid with forests, mountains and desert tiles.
-- Place your **home (🏠)** first, then construct **wood walls (🪵)** which can be upgraded to **stone walls (🧱)**.
-- Additional structures include **farms (🌾)** and **quarries (⛏️)**.
-- Resources and grid layout persist between sessions thanks to `localStorage`.
+- Upgrade your **living quarters** from a humble camp to larger homes.
+- Strengthen your **walls** from earthen mounds to sturdy stone.
+- Build multiple **farms (🌾)** and **quarries (⛏️)** and upgrade them for more production.
+- Structures and resources persist between sessions thanks to `localStorage`.
 - Gain experience when exploring and level up over time.
-- Undo your last placement or clear the grid entirely.
 
 ---
 

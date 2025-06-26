@@ -4,33 +4,11 @@ body {
   margin: auto;
   padding: 1em;
 }
-#buildControls {
-  margin: 0.5em 0;
-}
-#buildCost {
-  font-size: 0.8em;
-  margin: 0.25em 0;
-}
-#craftControls,
-#floorControls,
 #questContainer {
   margin: 0.5em 0;
 }
-#grid {
-  display: grid;
-  grid-template: repeat(var(--grid-size, 5), 50px) / repeat(var(--grid-size, 5), 50px);
-  gap: 2px;
-  margin-top: 0.5em;
-}
-.cell {
-  background: #eee;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.8em;
-}
-.cell.selected {
-  outline: 2px solid #f00;
+#structures > div {
+  margin: 0.5em 0;
 }
 button {
   font-size: 1em;
