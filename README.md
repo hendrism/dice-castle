@@ -45,9 +45,8 @@ This project is designed to be iPhone-friendly and playable in portrait mode. On
 
 ## 🔮 Future Ideas
 
-- Multi-floor castle building
-- Crafting system (combine resources)
-- Quest-based objectives
+- Additional quest lines
+- More random events and NPCs
 
 ---
 

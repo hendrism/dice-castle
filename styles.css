@@ -7,6 +7,11 @@ body {
 #buildControls {
   margin: 0.5em 0;
 }
+#craftControls,
+#floorControls,
+#questContainer {
+  margin: 0.5em 0;
+}
 #grid {
   display: grid;
   grid-template: repeat(var(--grid-size, 5), 50px) / repeat(var(--grid-size, 5), 50px);

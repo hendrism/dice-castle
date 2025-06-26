@@ -14,15 +14,38 @@
   <button id="exploreBtn">Roll to Explore</button>
   <div id="resources">Wood: 0 | Stone: 0 | Metal: 0 | Level: 1</div>
 
+  <div id="questContainer">
+    <pre id="quests"></pre>
+  </div>
+
   <div id="buildControls">
     <label for="buildSelect">Build:</label>
     <select id="buildSelect">
       <option value="wall">Wall 🧱</option>
       <option value="tower">Tower 🏰</option>
       <option value="door">Door 🚪</option>
+      <option value="market">Market 🏪</option>
+      <option value="barracks">Barracks 🏹</option>
+      <option value="fortifiedWall">Fortified Wall</option>
+      <option value="reinforcedDoor">Reinforced Door</option>
     </select>
     <button id="undoBtn">Undo</button>
     <button id="clearBtn">Clear</button>
+  </div>
+
+  <div id="craftControls">
+    <label for="craftSelect">Craft:</label>
+    <select id="craftSelect">
+      <option value="fortifiedWall">Fortified Wall</option>
+      <option value="reinforcedDoor">Reinforced Door</option>
+    </select>
+    <button id="craftBtn">Craft</button>
+  </div>
+
+  <div id="floorControls">
+    <label for="floorSelect">Floor:</label>
+    <select id="floorSelect"></select>
+    <button id="addFloorBtn">Add Floor</button>
   </div>
 
   <h2>Your Castle</h2>
