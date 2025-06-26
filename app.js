@@ -7,14 +7,19 @@ const CRAFTABLES = {
   reinforcedDoor: { emoji: '🚪', cost: { [RESOURCE_TYPES.WOOD]: 1, [RESOURCE_TYPES.METAL]: 1 } },
 };
 
+const TERRAIN_TYPES = {
+  plain: { emoji: '⬜' },
+  forest: { emoji: '🌲' },
+  mountain: { emoji: '⛰️' },
+  desert: { emoji: '🏜️' },
+};
+
 const BUILDINGS = {
-  wall: { emoji: '🧱', cost: { [RESOURCE_TYPES.STONE]: 1 } },
-  tower: { emoji: '🏰', cost: { [RESOURCE_TYPES.STONE]: 2, [RESOURCE_TYPES.METAL]: 1 } },
-  door: { emoji: '🚪', cost: { [RESOURCE_TYPES.WOOD]: 1 } },
-  market: { emoji: '🏪', cost: { [RESOURCE_TYPES.WOOD]: 2, [RESOURCE_TYPES.STONE]: 1 } },
-  barracks: { emoji: '🏹', cost: { [RESOURCE_TYPES.STONE]: 2, [RESOURCE_TYPES.WOOD]: 1 } },
-  fortifiedWall: { emoji: '🧱', inventoryItem: 'fortifiedWall' },
-  reinforcedDoor: { emoji: '🚪', inventoryItem: 'reinforcedDoor' },
+  home: { emoji: '🏠', cost: { [RESOURCE_TYPES.WOOD]: 5 } },
+  woodWall: { emoji: '🪵', cost: { [RESOURCE_TYPES.WOOD]: 1 } },
+  stoneWall: { emoji: '🧱', cost: { [RESOURCE_TYPES.STONE]: 2 }, upgradeFrom: 'woodWall' },
+  farm: { emoji: '🌾', cost: { [RESOURCE_TYPES.WOOD]: 1, [RESOURCE_TYPES.STONE]: 1 } },
+  quarry: { emoji: '⛏️', cost: { [RESOURCE_TYPES.WOOD]: 1, [RESOURCE_TYPES.STONE]: 2 } },
 };
 
 const LOCATIONS = {
@@ -52,7 +57,22 @@ const MAX_STAMINA = 10;
 // game state
 let resources = load('resources') || { wood: 0, stone: 0, metal: 0 };
 let inventory = load('inventory') || { fortifiedWall: 0, reinforcedDoor: 0 };
+function generateTerrain() {
+  const terrains = Object.keys(TERRAIN_TYPES);
+  return Array.from({ length: GRID_SIZE }, () =>
+    Array.from({ length: GRID_SIZE }, () => terrains[Math.floor(Math.random() * terrains.length)])
+  );
+}
+
 let grid = load('grid') || [Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(''))];
+let terrain = load('terrain');
+if (!terrain) {
+  terrain = [generateTerrain()];
+}
+let homePlaced = load('homePlaced');
+if (homePlaced === null) {
+  homePlaced = grid.some(f => f.some(row => row.includes('home')));
+}
 let currentFloor = load('currentFloor') || 0;
 let player = load('player') || { level: 1, xp: 0, stamina: MAX_STAMINA };
 if (player.stamina === undefined) player.stamina = MAX_STAMINA;
@@ -102,6 +122,8 @@ function save() {
   localStorage.setItem('resources', JSON.stringify(resources));
   localStorage.setItem('inventory', JSON.stringify(inventory));
   localStorage.setItem('grid', JSON.stringify(grid));
+  localStorage.setItem('terrain', JSON.stringify(terrain));
+  localStorage.setItem('homePlaced', JSON.stringify(homePlaced));
   localStorage.setItem('currentFloor', JSON.stringify(currentFloor));
   localStorage.setItem('player', JSON.stringify(player));
   localStorage.setItem('questProgress', JSON.stringify(questProgress));
@@ -235,6 +257,7 @@ floorSelect.addEventListener('change', e => {
 
 addFloorBtn.addEventListener('click', () => {
   grid.push(Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill('')));
+  terrain.push(generateTerrain());
   currentFloor = grid.length - 1;
   populateFloors();
   drawGrid();
@@ -282,18 +305,47 @@ function drawGrid() {
   gridEl.style.setProperty('--grid-size', GRID_SIZE);
   gridEl.innerHTML = '';
   const floor = grid[currentFloor];
+  const terrainFloor = terrain[currentFloor];
   for (let y = 0; y < GRID_SIZE; y++) {
     for (let x = 0; x < GRID_SIZE; x++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
-      cell.textContent = floor[y][x] || '';
+      const buildingKey = floor[y][x];
+      const display = buildingKey
+        ? BUILDINGS[buildingKey].emoji
+        : TERRAIN_TYPES[terrainFloor[y][x]].emoji;
+      cell.textContent = display;
       cell.addEventListener('click', () => {
-        if (!floor[y][x]) {
-          const building = BUILDINGS[selectedBuild];
+        const currentKey = floor[y][x];
+        if (!currentKey) {
+          const buildingKey = selectedBuild;
+          const building = BUILDINGS[buildingKey];
+          if (building.upgradeFrom) {
+            narrate('Place a wood wall first.');
+            return;
+          }
+          if (buildingKey !== 'home' && !homePlaced) {
+            narrate('Place your home first.');
+            return;
+          }
           if (canAfford(building)) {
             payCost(building);
-            floor[y][x] = building.emoji;
-            history.push({ x, y, building, floor: currentFloor });
+            floor[y][x] = buildingKey;
+            history.push({ x, y, prev: '', new: buildingKey, floor: currentFloor });
+            if (buildingKey === 'home') homePlaced = true;
+            questProgress.totalBuildings++;
+            checkQuests();
+            cell.classList.add('selected');
+            setTimeout(() => cell.classList.remove('selected'), 200);
+            updateResources();
+            drawGrid();
+          }
+        } else if (selectedBuild === 'stoneWall' && currentKey === 'woodWall') {
+          const building = BUILDINGS['stoneWall'];
+          if (canAfford(building)) {
+            payCost(building);
+            floor[y][x] = 'stoneWall';
+            history.push({ x, y, prev: 'woodWall', new: 'stoneWall', floor: currentFloor });
             questProgress.totalBuildings++;
             checkQuests();
             cell.classList.add('selected');
@@ -311,8 +363,9 @@ function drawGrid() {
 document.getElementById('undoBtn').addEventListener('click', () => {
   const last = history.pop();
   if (last) {
-    grid[last.floor][last.y][last.x] = '';
-    refundCost(last.building);
+    grid[last.floor][last.y][last.x] = last.prev;
+    refundCost(BUILDINGS[last.new]);
+    homePlaced = grid.some(f => f.some(row => row.includes('home')));
     drawGrid();
     updateResources();
   }
@@ -321,6 +374,7 @@ document.getElementById('undoBtn').addEventListener('click', () => {
 document.getElementById('clearBtn').addEventListener('click', () => {
   grid[currentFloor] = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(''));
   history = history.filter(h => h.floor !== currentFloor);
+  homePlaced = grid.some(f => f.some(row => row.includes('home')));
   drawGrid();
   updateResources();
 });
