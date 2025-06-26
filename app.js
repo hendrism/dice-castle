@@ -34,6 +34,11 @@ const LOCATIONS = {
 const XP_PER_LEVEL = 5;
 const EXPLORES_PER_DAY = 5;
 
+let eventLog = load('eventLog') || [];
+let season = load('season') || 0; // 0 spring, 1 summer, 2 autumn, 3 winter
+let dailyChallenge = load('dailyChallenge') || { completed: false, locations: {} };
+let inventory = load('inventory') || { luckyCharm: false };
+
 const HOME_UPGRADES = [
   { name: 'Camp', emoji: '🏕️', nextCost: { [RESOURCE_TYPES.WOOD]: 5 } },
   { name: 'House', emoji: '🏠', nextCost: { [RESOURCE_TYPES.WOOD]: 10, [RESOURCE_TYPES.STONE]: 5 } },
@@ -90,6 +95,10 @@ function save() {
   localStorage.setItem('player', JSON.stringify(player));
   localStorage.setItem('questProgress', JSON.stringify(questProgress));
   localStorage.setItem('completedQuests', JSON.stringify(completedQuests));
+  localStorage.setItem('eventLog', JSON.stringify(eventLog));
+  localStorage.setItem('season', JSON.stringify(season));
+  localStorage.setItem('dailyChallenge', JSON.stringify(dailyChallenge));
+  localStorage.setItem('inventory', JSON.stringify(inventory));
 }
 function load(key) {
   const data = localStorage.getItem(key);
@@ -97,6 +106,10 @@ function load(key) {
 }
 function narrate(text) {
   document.getElementById('narration').textContent = text;
+  eventLog.unshift(text);
+  if (eventLog.length > 5) eventLog.pop();
+  const logEl = document.getElementById('log');
+  if (logEl) logEl.textContent = eventLog.join('\n');
 }
 function costToString(cost) {
   return Object.entries(cost).map(([k,v])=>`${v} ${k}`).join(', ');
@@ -110,11 +123,16 @@ function updateQuests() {
   if (!completedQuests.includes('level3')) {
     quests.push(`Reach level 3 (current ${player.level})`);
   }
+  if (!completedQuests.includes('lucky')) {
+    quests.push('Craft a Lucky Charm');
+  }
+  const locNames = Object.keys(dailyChallenge.locations);
+  quests.push(`Daily: explore all locations (${locNames.length}/3)`);
   questsEl.textContent = quests.length ? 'Quests:\n' + quests.join('\n') : 'All quests completed!';
 }
 function updateResources() {
   document.getElementById('resources').textContent =
-    `Wood: ${resources.wood} | Stone: ${resources.stone} | Metal: ${resources.metal} | Level: ${player.level} | Explores Left: ${player.explores}/${EXPLORES_PER_DAY}`;
+    `Wood: ${resources.wood} | Stone: ${resources.stone} | Metal: ${resources.metal} | Level: ${player.level} | Explores Left: ${player.explores}/${EXPLORES_PER_DAY} | Season: ${['Spring','Summer','Autumn','Winter'][season]}`;
   updateUI();
   updateQuests();
   save();
@@ -129,6 +147,11 @@ function checkQuests() {
     completedQuests.push('level3');
     resources.metal += 2;
     narrate('Quest complete! You reached level 3 and gained 2 metal.');
+  }
+  if (!completedQuests.includes('lucky') && inventory.luckyCharm) {
+    completedQuests.push('lucky');
+    resources.stone += 2;
+    narrate('Quest complete! You crafted a Lucky Charm and gained 2 stone.');
   }
 }
 function canAfford(cost) {
@@ -159,11 +182,20 @@ function sleep() {
   }
   const farmYield = structures.farmCount * (structures.farmLevel + 1);
   const quarryYield = structures.quarryCount * (structures.quarryLevel + 1);
+  const seasonEffect = season === 0 ? 1 : season === 3 ? -1 : 0;
+  let farmTotal = farmYield + seasonEffect * structures.farmCount;
+  farmTotal = Math.max(0, farmTotal);
   if (farmYield || quarryYield) {
-    resources.wood += farmYield;
+    resources.wood += farmTotal;
     resources.stone += quarryYield;
-    msg += ` Your farms produced ${farmYield} wood and quarries yielded ${quarryYield} stone.`;
+    msg += ` Your farms produced ${farmTotal} wood and quarries yielded ${quarryYield} stone.`;
   }
+  if (dailyChallenge.completed) {
+    resources.metal += 1;
+    msg += ' Daily challenge complete! You gained 1 metal.';
+  }
+  season = (season + 1) % 4;
+  dailyChallenge = { completed: false, locations: {} };
   player.explores = EXPLORES_PER_DAY;
   narrate(msg);
   updateResources();
@@ -197,11 +229,12 @@ document.getElementById('exploreBtn').addEventListener('click', () => {
     msg += ` Critical success! You found ${reward.amount} ${reward.resource}!`;
   }
   const eventRoll = Math.random();
+  const failChance = 0.05 + player.level * 0.01;
   if (eventRoll < 0.05) {
     const gain = Object.values(RESOURCE_TYPES)[Math.floor(Math.random()*3)];
     resources[gain]++;
     msg += ` A friendly trader gifted you 1 ${gain}!`;
-  } else if (eventRoll < 0.1) {
+  } else if (eventRoll < failChance) {
     const keys = Object.keys(resources).filter(k => resources[k] > 0);
     if (keys.length) {
       const lossKey = keys[Math.floor(Math.random()*keys.length)];
@@ -215,6 +248,14 @@ document.getElementById('exploreBtn').addEventListener('click', () => {
     player.xp = 0;
     msg += ` Level up! You are now level ${player.level}.`;
     checkQuests();
+  }
+  dailyChallenge.locations[locationSelect.value] = true;
+  if (Object.keys(dailyChallenge.locations).length === 3) {
+    dailyChallenge.completed = true;
+  }
+  if (inventory.luckyCharm && reward) {
+    resources[reward.resource] += 1;
+    msg += ' Your Lucky Charm granted 1 extra ' + reward.resource + '!';
   }
   narrate(msg);
   updateResources();
@@ -262,6 +303,9 @@ const buildFarmBtn = document.getElementById('buildFarmBtn');
 const upgradeFarmBtn = document.getElementById('upgradeFarmBtn');
 const buildQuarryBtn = document.getElementById('buildQuarryBtn');
 const upgradeQuarryBtn = document.getElementById('upgradeQuarryBtn');
+const craftCharmBtn = document.getElementById('craftCharmBtn');
+const textBiggerBtn = document.getElementById('textBigger');
+const textSmallerBtn = document.getElementById('textSmaller');
 
 function updateUI() {
   homeLevelSpan.textContent = `${HOME_UPGRADES[structures.homeLevel].name} ${HOME_UPGRADES[structures.homeLevel].emoji}`;
@@ -289,6 +333,8 @@ function updateUI() {
   upgradeQuarryBtn.disabled = !qc || !canAfford(qc);
   buildQuarryBtn.textContent = `Build Quarry (Cost: ${costToString(BUILD_QUARRY_COST)})`;
   buildQuarryBtn.disabled = structures.quarryCount >= structures.homeLevel + 1 || !canAfford(BUILD_QUARRY_COST);
+
+  craftCharmBtn.disabled = inventory.luckyCharm || !canAfford({ [RESOURCE_TYPES.WOOD]: 2 });
 }
 
 upgradeHomeBtn.addEventListener('click', () => tryUpgrade('home', HOME_UPGRADES, 'homeLevel'));
@@ -297,5 +343,23 @@ buildFarmBtn.addEventListener('click', () => tryBuild('farm', BUILD_FARM_COST, '
 upgradeFarmBtn.addEventListener('click', () => tryUpgrade('farms', FARM_UPGRADES, 'farmLevel'));
 buildQuarryBtn.addEventListener('click', () => tryBuild('quarry', BUILD_QUARRY_COST, 'quarryCount'));
 upgradeQuarryBtn.addEventListener('click', () => tryUpgrade('quarries', QUARRY_UPGRADES, 'quarryLevel'));
+craftCharmBtn.addEventListener('click', () => {
+  const cost = { [RESOURCE_TYPES.WOOD]: 2 };
+  if (!inventory.luckyCharm && canAfford(cost)) {
+    payCost(cost);
+    inventory.luckyCharm = true;
+    narrate('You crafted a Lucky Charm!');
+    checkQuests();
+    updateResources();
+  }
+});
+textBiggerBtn.addEventListener('click', () => {
+  const size = parseInt(getComputedStyle(document.body).fontSize);
+  document.body.style.fontSize = (size + 2) + 'px';
+});
+textSmallerBtn.addEventListener('click', () => {
+  const size = parseInt(getComputedStyle(document.body).fontSize);
+  document.body.style.fontSize = Math.max(12, size - 2) + 'px';
+});
 
 updateResources();

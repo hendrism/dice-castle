@@ -18,6 +18,10 @@ This project is designed to be iPhone-friendly and playable in portrait mode. On
 - Build multiple **farms (🌾)** and **quarries (⛏️)** and upgrade them for more production.
 - Structures and resources persist between sessions thanks to `localStorage`.
 - Gain experience when exploring and level up over time.
+- Craft items like a **Lucky Charm** for bonuses.
+- Seasons affect farm output and rotate each day.
+- Complete a daily challenge by exploring all locations.
+- View a running event log and adjust text size for accessibility.
 
 ## 🏗️ Building & Upgrading
 
