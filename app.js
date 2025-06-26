@@ -16,14 +16,46 @@ const BUILDINGS = {
   fortifiedWall: { emoji: '🧱', inventoryItem: 'fortifiedWall' },
   reinforcedDoor: { emoji: '🚪', inventoryItem: 'reinforcedDoor' },
 };
+
+const LOCATIONS = {
+  forest: {
+    cost: 1,
+    getReward() {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      if (roll <= 4) return { resource: RESOURCE_TYPES.WOOD, amount: 1 };
+      if (roll <= 5) return { resource: RESOURCE_TYPES.STONE, amount: 1 };
+      return { resource: RESOURCE_TYPES.METAL, amount: 1 };
+    },
+  },
+  quarry: {
+    cost: 2,
+    getReward() {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      if (roll <= 2) return { resource: RESOURCE_TYPES.WOOD, amount: 1 };
+      if (roll <= 5) return { resource: RESOURCE_TYPES.STONE, amount: 2 };
+      return { resource: RESOURCE_TYPES.METAL, amount: 1 };
+    },
+  },
+  mine: {
+    cost: 3,
+    getReward() {
+      const roll = Math.floor(Math.random() * 6) + 1;
+      if (roll <= 3) return { resource: RESOURCE_TYPES.STONE, amount: 1 };
+      if (roll <= 5) return { resource: RESOURCE_TYPES.METAL, amount: 1 };
+      return { resource: RESOURCE_TYPES.METAL, amount: 2 };
+    },
+  },
+};
 const XP_PER_LEVEL = 5;
+const MAX_STAMINA = 10;
 
 // game state
 let resources = load('resources') || { wood: 0, stone: 0, metal: 0 };
 let inventory = load('inventory') || { fortifiedWall: 0, reinforcedDoor: 0 };
 let grid = load('grid') || [Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(''))];
 let currentFloor = load('currentFloor') || 0;
-let player = load('player') || { level: 1, xp: 0 };
+let player = load('player') || { level: 1, xp: 0, stamina: MAX_STAMINA };
+if (player.stamina === undefined) player.stamina = MAX_STAMINA;
 let history = [];
 let questProgress = load('questProgress') || { totalBuildings: 0 };
 let completedQuests = load('completedQuests') || [];
@@ -32,7 +64,7 @@ let completedQuests = load('completedQuests') || [];
 function updateResources() {
   const inv = `Fortified Walls: ${inventory.fortifiedWall} | Reinforced Doors: ${inventory.reinforcedDoor}`;
   document.getElementById('resources').textContent =
-    `Wood: ${resources.wood} | Stone: ${resources.stone} | Metal: ${resources.metal} | Level: ${player.level}` +
+    `Wood: ${resources.wood} | Stone: ${resources.stone} | Metal: ${resources.metal} | Level: ${player.level} | Stamina: ${player.stamina}/${MAX_STAMINA}` +
     `\n${inv}`;
   updateQuests();
   save();
@@ -82,21 +114,44 @@ function load(key) {
 }
 
 // exploration
-document.getElementById('exploreBtn').addEventListener('click', () => {
-  const roll = Math.floor(Math.random() * 6) + 1;
-  let found;
-  if (roll <= 2) {
-    resources.wood++;
-    found = '1 Wood';
-  } else if (roll <= 4) {
-    resources.stone++;
-    found = '1 Stone';
-  } else {
-    resources.metal++;
-    found = '1 Metal';
-  }
+const locationSelect = document.getElementById('locationSelect');
 
-  let msg = `You rolled a ${roll} and found ${found}!`;
+function sleep() {
+  const roll = Math.floor(Math.random() * 6) + 1;
+  let msg = 'Exhausted, you fall asleep. ';
+  if (roll <= 2) {
+    const keys = Object.keys(resources).filter(k => resources[k] > 0);
+    if (keys.length) {
+      const loss = keys[Math.floor(Math.random() * keys.length)];
+      resources[loss]--;
+      msg += `Thieves stole 1 ${loss} during the night.`;
+    } else {
+      msg += 'Restless dreams disturb your sleep.';
+    }
+  } else if (roll <= 4) {
+    msg += 'Nothing of note happens overnight.';
+  } else {
+    const gain = Object.values(RESOURCE_TYPES)[Math.floor(Math.random() * 3)];
+    resources[gain]++;
+    msg += `You wake refreshed and find 1 ${gain} nearby.`;
+  }
+  player.stamina = MAX_STAMINA;
+  narrate(msg);
+  updateResources();
+}
+
+document.getElementById('exploreBtn').addEventListener('click', () => {
+  const loc = LOCATIONS[locationSelect.value];
+  if (player.stamina < loc.cost) {
+    sleep();
+    return;
+  }
+  player.stamina -= loc.cost;
+  const reward = loc.getReward();
+  resources[reward.resource] += reward.amount;
+  const found = `${reward.amount} ${reward.resource.charAt(0).toUpperCase() + reward.resource.slice(1)}`;
+
+  let msg = `You explored the ${locationSelect.value} and found ${found}!`;
 
   const eventRoll = Math.random();
   if (eventRoll < 0.05) {
@@ -129,6 +184,9 @@ document.getElementById('exploreBtn').addEventListener('click', () => {
 
   narrate(msg);
   updateResources();
+  if (player.stamina <= 0) {
+    sleep();
+  }
 });
 
 // grid setup
