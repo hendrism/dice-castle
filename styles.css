@@ -7,6 +7,10 @@ body {
 #buildControls {
   margin: 0.5em 0;
 }
+#buildCost {
+  font-size: 0.8em;
+  margin: 0.25em 0;
+}
 #craftControls,
 #floorControls,
 #questContainer {
