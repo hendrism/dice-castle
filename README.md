@@ -9,8 +9,9 @@ This project is designed to be iPhone-friendly and playable in portrait mode. On
 
 ## 🎮 Gameplay
 
-- Choose a location and tap **"Explore"** to gather resources using stamina.
-- Stamina drains as you explore and automatically recovers when you sleep.
+- Choose a location and tap **"Explore"** to gather resources.
+- You can explore five times per in-game day.
+- Each exploration rolls a d20: 1 is a critical fail while 20 is a huge success.
 - Sleep triggers a dice roll for good, bad, or neutral overnight events.
 - Upgrade your **living quarters** from a humble camp to larger homes.
 - Strengthen your **walls** from earthen mounds to sturdy stone.

@@ -32,7 +32,7 @@ const LOCATIONS = {
 };
 
 const XP_PER_LEVEL = 5;
-const MAX_STAMINA = 10;
+const EXPLORES_PER_DAY = 5;
 
 const HOME_UPGRADES = [
   { name: 'Camp', emoji: '🏕️', nextCost: { [RESOURCE_TYPES.WOOD]: 5 } },
@@ -74,7 +74,13 @@ let structures = load('structures') || {
   quarryLevel: 0,
   quarryCount: 0
 };
-let player = load('player') || { level: 1, xp: 0, stamina: MAX_STAMINA };
+let player = load('player') || { level: 1, xp: 0, explores: EXPLORES_PER_DAY };
+if (player.stamina !== undefined && player.explores === undefined) {
+  player.explores = player.stamina;
+}
+if (player.explores === undefined) {
+  player.explores = EXPLORES_PER_DAY;
+}
 let questProgress = load('questProgress') || { totalBuildings: 0 };
 let completedQuests = load('completedQuests') || [];
 
@@ -108,7 +114,7 @@ function updateQuests() {
 }
 function updateResources() {
   document.getElementById('resources').textContent =
-    `Wood: ${resources.wood} | Stone: ${resources.stone} | Metal: ${resources.metal} | Level: ${player.level} | Stamina: ${player.stamina}/${MAX_STAMINA}`;
+    `Wood: ${resources.wood} | Stone: ${resources.stone} | Metal: ${resources.metal} | Level: ${player.level} | Explores Left: ${player.explores}/${EXPLORES_PER_DAY}`;
   updateUI();
   updateQuests();
   save();
@@ -134,7 +140,7 @@ function payCost(cost) {
 
 function sleep() {
   const roll = Math.floor(Math.random() * 6) + 1;
-  let msg = 'Exhausted, you fall asleep. ';
+  let msg = 'After a long day you rest. ';
   if (roll <= 2) {
     const keys = Object.keys(resources).filter(k => resources[k] > 0);
     if (keys.length) {
@@ -158,7 +164,7 @@ function sleep() {
     resources.stone += quarryYield;
     msg += ` Your farms produced ${farmYield} wood and quarries yielded ${quarryYield} stone.`;
   }
-  player.stamina = MAX_STAMINA;
+  player.explores = EXPLORES_PER_DAY;
   narrate(msg);
   updateResources();
 }
@@ -167,14 +173,29 @@ const locationSelect = document.getElementById('locationSelect');
 
 document.getElementById('exploreBtn').addEventListener('click', () => {
   const loc = LOCATIONS[locationSelect.value];
-  if (player.stamina < loc.cost) {
+  if (player.explores <= 0) {
     sleep();
     return;
   }
-  player.stamina -= loc.cost;
-  const reward = loc.getReward();
-  resources[reward.resource] += reward.amount;
-  let msg = `You explored the ${locationSelect.value} and found ${reward.amount} ${reward.resource}.`;
+  player.explores--;
+  const roll = Math.floor(Math.random() * 20) + 1;
+  let reward = loc.getReward();
+  let msg = `You rolled a ${roll} while exploring the ${locationSelect.value}.`;
+  if (roll === 1) {
+    reward = null;
+    msg += ' Critical fail! You found nothing.';
+  } else if (roll < 10) {
+    reward.amount = Math.max(1, Math.floor(reward.amount / 2));
+    resources[reward.resource] += reward.amount;
+    msg += ` You found only ${reward.amount} ${reward.resource}.`;
+  } else if (roll < 20) {
+    resources[reward.resource] += reward.amount;
+    msg += ` You found ${reward.amount} ${reward.resource}.`;
+  } else {
+    reward.amount *= 2;
+    resources[reward.resource] += reward.amount;
+    msg += ` Critical success! You found ${reward.amount} ${reward.resource}!`;
+  }
   const eventRoll = Math.random();
   if (eventRoll < 0.05) {
     const gain = Object.values(RESOURCE_TYPES)[Math.floor(Math.random()*3)];
@@ -197,7 +218,7 @@ document.getElementById('exploreBtn').addEventListener('click', () => {
   }
   narrate(msg);
   updateResources();
-  if (player.stamina <= 0) {
+  if (player.explores <= 0) {
     sleep();
   }
 });
