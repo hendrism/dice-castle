@@ -1,0 +1,13 @@
+{
+  "name": "dice-castle",
+  "version": "1.0.0",
+  "description": "**Dice & Castle** is a minimalist browser-based game built as a Progressive Web App (PWA). You explore regions using dice rolls to gather resources, then use those resources to build a castle on a simple 2D grid.",
+  "main": "app.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
