@@ -18,6 +18,54 @@ This project is designed to be iPhone-friendly and playable in portrait mode. On
 - Structures and resources persist between sessions thanks to `localStorage`.
 - Gain experience when exploring and level up over time.
 
+## 🏗️ Building & Upgrading
+
+Scroll down to the **Your Settlement** section to expand your camp. Each
+structure lists its current level along with a **Build** or **Upgrade** button.
+The buttons display the required materials and are enabled whenever you can
+afford the cost.
+
+### Build Costs
+
+- **Farm** – 1 wood, 1 stone
+- **Quarry** – 1 wood, 2 stone
+
+### Upgrade Costs
+
+**Home**
+
+| From    | To       | Cost                    |
+| ------- | -------- | ----------------------- |
+| Camp    | House    | 5 wood                  |
+| House   | Hall     | 10 wood, 5 stone        |
+| Hall    | Fortress | 20 stone, 5 metal       |
+
+**Walls**
+
+| From   | To      | Cost      |
+| ------ | ------- | --------- |
+| None   | Earthen | 5 wood    |
+| Earthen| Wood    | 10 wood   |
+| Wood   | Stone   | 20 stone  |
+
+**Farms**
+
+| From     | To       | Cost                          |
+| -------- | -------- | ----------------------------- |
+| Basic    | Improved | 2 wood                        |
+| Improved | Advanced | 5 wood, 2 stone               |
+| Advanced | Master   | 10 wood, 5 stone, 2 metal     |
+
+**Quarries**
+
+| From     | To       | Cost                          |
+| -------- | -------- | ----------------------------- |
+| Basic    | Improved | 2 wood                        |
+| Improved | Advanced | 5 wood, 2 stone               |
+| Advanced | Master   | 10 wood, 5 stone, 2 metal     |
+
+You can build a number of farms and quarries up to your home level plus one.
+
 ---
 
 ## 🧱 Tech Stack
