@@ -215,18 +215,23 @@ document.getElementById('exploreBtn').addEventListener('click', () => {
   let msg = `You rolled a ${roll} while exploring the ${locationSelect.value}.`;
   if (roll === 1) {
     reward = null;
-    msg += ' Critical fail! You found nothing.';
-  } else if (roll < 10) {
+    msg += ' Complete failure! You found nothing.';
+  } else if (roll <= 8) {
     reward.amount = Math.max(1, Math.floor(reward.amount / 2));
     resources[reward.resource] += reward.amount;
-    msg += ` You found only ${reward.amount} ${reward.resource}.`;
-  } else if (roll < 20) {
+    msg += ` Some success. You found ${reward.amount} ${reward.resource}.`;
+  } else if (roll <= 14) {
+    reward.amount = Math.ceil(reward.amount * 1.5);
     resources[reward.resource] += reward.amount;
-    msg += ` You found ${reward.amount} ${reward.resource}.`;
-  } else {
+    msg += ` Moderate success. You found ${reward.amount} ${reward.resource}.`;
+  } else if (roll < 20) {
     reward.amount *= 2;
     resources[reward.resource] += reward.amount;
-    msg += ` Critical success! You found ${reward.amount} ${reward.resource}!`;
+    msg += ` High success! You found ${reward.amount} ${reward.resource}.`;
+  } else {
+    reward.amount *= 3;
+    resources[reward.resource] += reward.amount;
+    msg += ` Natural 20! You found ${reward.amount} ${reward.resource}!`;
   }
   const eventRoll = Math.random();
   const failChance = 0.05 + player.level * 0.01;
