@@ -3,6 +3,7 @@ body {
   max-width: 480px;
   margin: auto;
   padding: 1em;
+  padding-bottom: 3.5em; /* space for bottom nav */
   font-size: 16px;
 }
 #questContainer {
@@ -35,4 +36,19 @@ button {
   margin-top: 0.5em;
   height: 6em;
   overflow-y: auto;
+}
+
+#bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  background: #fff;
+  border-top: 1px solid #ccc;
+  padding: 0.5em 0;
+}
+#bottomNav button {
+  flex: 1;
 }
