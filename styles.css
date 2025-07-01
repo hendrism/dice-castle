@@ -15,6 +15,19 @@ button {
   font-size: 1em;
   padding: 0.5em 1em;
 }
+#toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5em;
+}
+#toolbar h1 {
+  margin: 0;
+  font-size: 1.5em;
+}
+#toolbar button {
+  padding: 0.25em 0.5em;
+}
 #log {
   white-space: pre-wrap;
   background: #f0f0f0;
