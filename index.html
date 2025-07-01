@@ -17,31 +17,34 @@
     </div>
   </nav>
   <div id="narration">Welcome, adventurer!</div>
-  <label for="locationSelect">Location:</label>
-  <select id="locationSelect">
-    <option value="forest">Forest</option>
-    <option value="quarry">Quarry</option>
-    <option value="mine">Mine</option>
-  </select>
-  <button id="exploreBtn">Explore</button>
-  <div id="resources">Wood: 0 | Stone: 0 | Metal: 0 | Level: 1 | Explores Left: 5/5</div>
 
-  <div id="questContainer">
-    <pre id="quests"></pre>
-  </div>
-  <pre id="log"></pre>
-  <button id="craftCharmBtn">Craft Lucky Charm (2 wood)</button>
+  <section id="exploreScreen">
+    <label for="locationSelect">Location:</label>
+    <select id="locationSelect">
+      <option value="forest">Forest</option>
+      <option value="quarry">Quarry</option>
+      <option value="mine">Mine</option>
+    </select>
+    <button id="exploreBtn">Explore</button>
+    <div id="resources">Wood: 0 | Stone: 0 | Metal: 0 | Level: 1 | Explores Left: 5/5</div>
 
-  <h2>Your Settlement</h2>
-  <div id="structures">
-    <div id="homeSection">
-      Home Level: <span id="homeLevel"></span>
-      <button id="upgradeHomeBtn"></button>
+    <div id="questContainer">
+      <pre id="quests"></pre>
     </div>
-    <div id="wallsSection">
-      Walls Level: <span id="wallsLevel"></span>
-      <button id="upgradeWallsBtn"></button>
-    </div>
+  </section>
+
+  <section id="buildScreen" style="display:none;">
+    <button id="craftCharmBtn">Craft Lucky Charm (2 wood)</button>
+    <h2>Your Settlement</h2>
+    <div id="structures">
+      <div id="homeSection">
+        Home Level: <span id="homeLevel"></span>
+        <button id="upgradeHomeBtn"></button>
+      </div>
+      <div id="wallsSection">
+        Walls Level: <span id="wallsLevel"></span>
+        <button id="upgradeWallsBtn"></button>
+      </div>
     <div id="farmSection">
       Farms: <span id="farmCount"></span> (Level <span id="farmLevel"></span>)
       <button id="buildFarmBtn"></button>
@@ -52,7 +55,18 @@
       <button id="buildQuarryBtn"></button>
       <button id="upgradeQuarryBtn"></button>
     </div>
-  </div>
+    </div>
+  </section>
+
+  <section id="logScreen" style="display:none;">
+    <pre id="log"></pre>
+  </section>
+
+  <nav id="bottomNav">
+    <button id="navExplore">Explore</button>
+    <button id="navBuild">Settlement</button>
+    <button id="navLog">Log</button>
+  </nav>
 
   <script src="app.js"></script>
   <script>

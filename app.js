@@ -311,6 +311,12 @@ const upgradeQuarryBtn = document.getElementById('upgradeQuarryBtn');
 const craftCharmBtn = document.getElementById('craftCharmBtn');
 const textBiggerBtn = document.getElementById('textBigger');
 const textSmallerBtn = document.getElementById('textSmaller');
+const exploreScreen = document.getElementById('exploreScreen');
+const buildScreen = document.getElementById('buildScreen');
+const logScreen = document.getElementById('logScreen');
+const navExplore = document.getElementById('navExplore');
+const navBuild = document.getElementById('navBuild');
+const navLog = document.getElementById('navLog');
 
 function updateUI() {
   homeLevelSpan.textContent = `${HOME_UPGRADES[structures.homeLevel].name} ${HOME_UPGRADES[structures.homeLevel].emoji}`;
@@ -366,5 +372,17 @@ textSmallerBtn.addEventListener('click', () => {
   const size = parseInt(getComputedStyle(document.body).fontSize);
   document.body.style.fontSize = Math.max(12, size - 2) + 'px';
 });
+
+function showScreen(screen) {
+  exploreScreen.style.display = screen === 'explore' ? 'block' : 'none';
+  buildScreen.style.display = screen === 'build' ? 'block' : 'none';
+  logScreen.style.display = screen === 'log' ? 'block' : 'none';
+}
+
+navExplore.addEventListener('click', () => showScreen('explore'));
+navBuild.addEventListener('click', () => showScreen('build'));
+navLog.addEventListener('click', () => showScreen('log'));
+
+showScreen('explore');
 
 updateResources();
